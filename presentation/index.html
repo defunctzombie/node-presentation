@@ -167,6 +167,31 @@ printSync('doesn\'t matter. ');
         </article>
 
         <article>
+            <h3>execution interlude</h3>
+            <p>
+                What is the result of the following?
+            </p>
+            <pre class="prettyprint lang-js">
+try {
+    process.nextTick(function() {
+        throw new Error('error!');
+    });
+} catch (e) {
+    console.log('caught');
+}
+
+console.log('done');</pre>
+            <div class="build">
+                <p>
+                    The execution stack may not be where you think when the exception is thrown!
+                </p>
+                <p>
+                    node.js convention <code class="prettyprint lang-js">function (err, result) { ... }</code>
+                </p>
+            </div>
+        </article>
+
+        <article>
             <h3>references</h3>
             <dl>
                 <dt>node.js docs</dt>
