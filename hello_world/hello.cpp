@@ -28,6 +28,9 @@ v8::Handle<v8::Value> Func(const v8::Arguments& args) {
     // v8 objects are never created with the keyword 'new'
     v8::Local<v8::String> world = v8::String::New("world");
 
+    // Handles are like pointers in their access patterns
+    // use -> to call the methods of the underlying type
+
     // copies the value into the parent scope and removes all local handles
     // the parent scope is not responsible for managing the object returned
     // in this case, we will be returning to js execution
