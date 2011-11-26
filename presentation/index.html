@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>C++ with Node.js</title>
+    <meta charset='utf-8'>
+    <script src='slides.js'></script>
+</head>
+<body style='display: none'>
+    <section class='slides layout-regular template-default'>
+        <article>
+            <h1>
+                C++ modules in node.js
+            </h1>
+            <p>
+                Roman Shtylman
+                <br>
+                Nov 29th 2011
+            </p>
+        </article>
+
+        <article>
+            <h3>intro</h3>
+            <h4>me</h4>
+            <ul>
+                <li>Using node ~year</li>
+            </ul>
+            <h4>node.js</h4>
+            <ul>
+                <li>Javascript is everywhere (and growing)</li>
+                <li>Async event-based<br/>
+                    <small>twisted | event machine</small>
+                </li>
+                <li>Created in 2008, runs on v8<br/>
+                    <small>new hotness</small>
+                </li>
+            </ul>
+            <img class="centered" src="images/nodejs_logo.png"/>
+        </article>
+
+        <article>
+            <h3>why do c++ at all?</h3>
+            <table>
+                <tr>
+                    <th width="50%"><center>pro</center></th>
+                    <th><center>con</center></th>
+                </tr>
+                <tr>
+                    <td>
+                        <ul>
+                            <li>"legacy" code</li>
+                            <li>performance*</li>
+                            <li>extend app capabilities</li>
+                            <li>bulk processing</li>
+                            <li>exotic algorithms</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>deployment</li>
+                            <li>performance*</li>
+                            <li>developer capability</li>
+                            <li>unstable and ever changing</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+            <small>* if you can't prove it helped, it didn't help</small>
+        </article>
+
+        <article>
+            <h3>understanding v8 and node.js</h3>
+            <p>
+                Unless you understand javascript and node.js, you will fail.
+            </p>
+            <table>
+                <tr>
+                    <td style="border: 0px">
+                        <ul>
+                            <li>callback heavy<br/><small>closures</small></li>
+                            <li>libuv/libev/libeio<br/><small>thread pool</small></li>
+                            <li>block if you want<br/><small>multiple processes</small></li>
+                            <li>build from source<br/><small>stay up to date</small></li>
+                        </ul>
+                    </td>
+                    <td style="border: 0px">
+                <pre class="prettyprint lang-javascript">
+// this is not uncommon
+foo('param1', function(err, res) {
+    if (err)
+        // note error
+
+    bar(res.param2, function(err, res2) {
+        if (err)
+            // note error
+    });
+});</pre>
+                    </td>
+                </tr>
+            </table>
+        </article>
+
+        <article>
+            <h3>hello world</h3>
+            <p>
+                Understanding how modules are loaded is very important!<br/>
+                <a target="_new" href="http://nodejs.org/docs/latest/api/modules.html">http://nodejs.org/docs/latest/api/modules.html</a>
+            </p>
+            <h4>
+                Convert the following into c++ code
+            </h4>
+            <pre class="prettyprint lang-javascript">
+// file: hello_native.js
+exports.hello = function() {
+    return 'world';
+};</pre>
+            <small>see hello_world directory in project tree</small>
+        </article>
+
+        <article>
+            <h3>references</h3>
+            <dl>
+                <dt>node.js docs</dt>
+                <dd><a href="http://nodejs.org/docs/latest/api/">http://nodejs.org/docs/latest/api/</a></dd>
+                <dt>v8 api reference</dt>
+                <dd><a href="http://izs.me/v8-docs/main.html">http://izs.me/v8-docs/main.html</a></dd>
+                <dt>v8 embedders guide</dt>
+                <dd><a href="http://code.google.com/apis/v8/embed.html">http://code.google.com/apis/v8/embed.html</a></dd>
+            </dl>
+        </article>
+    </section>
+</body>
+</html>
