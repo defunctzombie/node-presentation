@@ -1,0 +1,15 @@
+simple 2d Point class in native js and c++
+
+ - point_native.js is the native implementation in javascript
+ - point.cpp is the clone in c++
+ - test.js test script
+
+Compilation:
+    $ make
+
+Compile manually:
+    node-waf configure
+    node-waf build
+
+    binary output in: ./build/Release/
+

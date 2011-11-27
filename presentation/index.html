@@ -13,8 +13,6 @@
             </h1>
             <p>
                 Roman Shtylman
-                <br>
-                Nov 29th 2011
             </p>
         </article>
 
@@ -113,7 +111,7 @@ foo('param1', function(err, res) {
 exports.hello = function() {
     return 'world';
 };</pre>
-            <small>see hello_world directory in project tree</small>
+            <small>see <em>hello_world</em> directory in project tree</small>
         </article>
 
         <article class="smaller">
@@ -192,6 +190,74 @@ console.log('done');</pre>
         </article>
 
         <article>
+            <h3>using objects</h3>
+            <p>
+                Just like in javascript, you can create functions that have instances.
+            </p>
+            <p>
+                Methods are set on the prototype template of a function.
+            </p>
+            <pre class="prettyprint lang-js">
+// 2d point
+var Point = function(x, y) {
+    this.x = x;
+    this.y = y;
+};
+
+// return a new point with x,y being the normalized values
+// of the current point
+Point.prototype.normalized = function() {
+    var norm = Math.sqrt(this.x * this.x + this.y * this.y);
+    return new Point(this.x/norm, this.y/norm);
+};</pre>
+            <small>see <em>point</em> directory in project tree</small>
+        </article>
+
+        <article>
+            <h3>understanding how c++ functions bind to v8</h3>
+            <p>
+                All methods exposed to v8 are done through static c++ methods.
+            </p>
+            <p>
+                Each javascript object instance has "internal fields" which are used to store
+                the raw c++ pointer for backreference.
+            </p>
+            <p>
+                <code class="prettyprint lang-cc">node::ObjectWrap</code> is provided as a convenience to get and set the internal field.
+            </p>
+            <p>
+                Technically, x and y are more encapslated in c++ than in js (setter and getter).
+                Use <code class="prettyprint lang-js">Object.defineProperty</code> to achieve the same result in js.
+            </p>
+            <pre class="prettyprint lang-js">
+Object.defineProperty(this, "x", {
+    get: function() { return _private_x; },
+    set: function(value) { _private_x = value; },
+});</pre>
+        </article>
+
+        <article>
+            <h3>tips</h3>
+            <ul>
+                <li>
+                    argument mangling is better left to js<br/>
+                    <small>keep c++ function arguments simple</small>
+                </li>
+                <li>
+                    error checking can be done is js<br/>
+                    <small>use caution and be consistent</small>
+                </li>
+                <li>
+                    extend bound prototypes with functions in js<br/>
+                    <small>mix and match c++/js definitions</small>
+                </li>
+                <li>
+                    './src' folder for hpp/cpp files<br/>
+                    <small>js files usually in ./lib</small>
+                </li>
+        </article>
+
+        <article>
             <h3>references</h3>
             <dl>
                 <dt>node.js docs</dt>
@@ -200,6 +266,9 @@ console.log('done');</pre>
                 <dd><a href="http://izs.me/v8-docs/main.html">http://izs.me/v8-docs/main.html</a></dd>
                 <dt>v8 embedders guide</dt>
                 <dd><a href="http://code.google.com/apis/v8/embed.html">http://code.google.com/apis/v8/embed.html</a></dd>
+
+                <dt>Mozilla Javascript Docs</dt>
+                <dd><a href="https://developer.mozilla.org/en/JavaScript">https://developer.mozilla.org/en/JavaScript</a></dd>
             </dl>
         </article>
     </section>
