@@ -175,7 +175,6 @@ public:
 // c++ is fun ;)
 v8::Persistent<v8::FunctionTemplate> Point::constructor_template;
 
-extern "C"
 void init(v8::Handle<v8::Object> target)
 {
     // typically all of the things for a given class are encapsalated in it
@@ -183,4 +182,9 @@ void init(v8::Handle<v8::Object> target)
     // to the Init method in Point
     Point::Init(target);
 }
+
+// notice that 'point' is lower case even tho our class is uppercase
+// if we want to have an uppercase module name we must change the filename accordingly
+// the filename and module name MUST match (case matters)
+NODE_MODULE(point, init);
 
