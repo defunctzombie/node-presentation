@@ -2,7 +2,7 @@ hello world using c++ bindings for node.js
 
  - hello_native.js is the native javascript reference implementation
  - hello.cpp is the c++ implementation of the same code
- - run.js sample script to run both versions (native and c++)
+ - test.js test script to run both versions (native and c++)
  - wscript is a 'WAF' build file to build the project
    node-waf is provided as a convenience. You could manually build using any tool you want.
 
