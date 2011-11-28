@@ -291,9 +291,6 @@ p {
 
   margin-top: 20px;
 }
-p:first-child {
-  margin-top: 0;
-}
 
 h1 {
   font-size: 60px;
