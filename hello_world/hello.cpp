@@ -4,15 +4,11 @@
 // v8 objects and everything else
 #include <v8.h>
 
-// usually you will want this
-// commented out to make it clear what comes from v8
-//using namespace v8;
-
 // args is an array of the arguments passed to the function
 // you can index into it using [ ] and also call .Length() to get the size
 // NOTE: v8 methods start with uppercase letters by convention
-v8::Handle<v8::Value> Func(const v8::Arguments& args) {
-
+v8::Handle<v8::Value> Func(const v8::Arguments& args)
+{
     // this manages the 'scope' of any v8 heap objects you create
     // anything created as a 'local'
     v8::HandleScope scope;
@@ -40,8 +36,8 @@ v8::Handle<v8::Value> Func(const v8::Arguments& args) {
 // this function will be called upon loading the module
 // 'target' is the module insance which we can attach methods to
 // you can think of 'target' like an object
-void init(v8::Handle<v8::Object> target) {
-
+void init(v8::Handle<v8::Object> target)
+{
     // add a new method called 'hello' using 'Method' as the
     // function that will execute
     NODE_SET_METHOD(target, "hello", Func);

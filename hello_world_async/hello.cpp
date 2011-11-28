@@ -35,8 +35,8 @@ void AfterPrint(uv_work_t* req)
     Baton* baton = static_cast<Baton*>(req->data);
     assert(baton);
 
-    // hopefully in the future the user will not need to delete
-    // the req pointer directly, for now you are responsible for its lifetime
+    // you are responsible for the lifetime of the uv_work_t object
+    // it should be deleted in the 'after' method
     // you could put a copy of it into the baton for easier mem management
     // but this is strange design imho so I have omitted it here to be clear
     // about what has to happen
@@ -56,9 +56,7 @@ void AfterPrint(uv_work_t* req)
     // since we don't know where we are in the execution stack, we
     // inform node of the exception and it will handle throwing it for us
     if (try_catch.HasCaught())
-    {
         node::FatalException(try_catch);
-    }
 
     // we have to inform v8 that it can garbage collect our function
     // since we no longer need the function after executing it
@@ -72,19 +70,22 @@ void AfterPrint(uv_work_t* req)
 /// async print method
 /// takes 2 arguments (string and callback)
 /// after the string is printed (on next tick) the callback is invoked
-v8::Handle<v8::Value> Print(const v8::Arguments& args) {
-
+v8::Handle<v8::Value> Print(const v8::Arguments& args)
+{
     v8::HandleScope scope;
 
     // check if the user provided an argument and that it was a string
     // usually you will want to use v8::ThrowException(v8::Exception::Error())
     // this will create an actual error object with a stack
     if (args.Length() != 2)
-        return v8::ThrowException(v8::String::New("must provide a string and a callback"));
+        return v8::ThrowException(v8::Exception::Error(
+                v8::String::New("must provide a string and a callback")));
     else if (!args[0]->IsString())
-        return v8::ThrowException(v8::String::New("first argument must be a string"));
+        return v8::ThrowException(v8::Exception::Error(
+                v8::String::New("first argument must be a string")));
     else if (!args[1]->IsFunction())
-        return v8::ThrowException(v8::String::New("second argument must be a function"));
+        return v8::ThrowException(v8::Exception::Error(
+                v8::String::New("second argument must be a function")));
 
     // a 'baton' object is what manages the data going into and out of the
     // worker thread. You can create any class you want and use different baton types
@@ -105,9 +106,8 @@ v8::Handle<v8::Value> Print(const v8::Arguments& args) {
     // there will be nothing to call when you return from the thread
     baton->callback = v8::Persistent<v8::Function>::New(args[1].As<v8::Function>());
 
-    // the uv request, manages request details and hold our baton
-    // for now we have to manage the lifetime ourselves, this may
-    // change in the future
+    // the uv request, manages request details and holds our baton
+    // we must manage the lifetime of this object ourselves
     uv_work_t* req = new uv_work_t();
 
     // the data pointer can be anything we want, convention is to use
@@ -129,17 +129,19 @@ v8::Handle<v8::Value> Print(const v8::Arguments& args) {
 
 /// Syncronous version of the above print method
 /// takes 1 argument (a string) and prints it to stdout
-v8::Handle<v8::Value> PrintSync(const v8::Arguments& args) {
-
+v8::Handle<v8::Value> PrintSync(const v8::Arguments& args)
+{
     v8::HandleScope scope;
 
     // check if the user provided an argument and that it was a string
     // usually you will want to use v8::ThrowException(v8::Exception::Error())
     // this will create an actual error object with a stack
     if (args.Length() != 1)
-        return v8::ThrowException(v8::String::New("must provide one argument"));
+        return v8::ThrowException(v8::Exception::Error(
+                v8::String::New("must provide one argument")));
     else if (!args[0]->IsString())
-        return v8::ThrowException(v8::String::New("argument must be a string"));
+        return v8::ThrowException(v8::Exception::Error(
+                v8::String::New("argument must be a string")));
 
     // convert the argument to a local string
     // in our case, we will just print directly so we don't need it
@@ -156,8 +158,8 @@ v8::Handle<v8::Value> PrintSync(const v8::Arguments& args) {
 // this function will be called upon loading the module
 // 'target' is the module insance which we can attach methods to
 // you can think of 'target' like an object
-void init(v8::Handle<v8::Object> target) {
-
+void init(v8::Handle<v8::Object> target)
+{
     // add a new method called 'hello' using 'Method' as the
     // function that will execute
     NODE_SET_METHOD(target, "print", Print);
