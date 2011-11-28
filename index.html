@@ -148,7 +148,7 @@ exports.hello = function() {
             <pre class="prettyprint lang-js">
 // file: hello_native.js
 
-// will print a string to the screen asyncronously
+// will print a string to the screen asynchronously
 // i.e. the string will not print until the next cycle
 // of the eventloop
 exports.print = function(string, cb) {
@@ -158,7 +158,7 @@ exports.print = function(string, cb) {
     });
 };
 
-// print string syncronously (immediately)
+// print string synchronously (immediately)
 // Note: node.js convention is to suffix 'Sync' after the name
 // You could just detect the cb parameter.
 exports.printSync = function(string) {
