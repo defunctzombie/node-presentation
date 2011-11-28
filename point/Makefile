@@ -5,7 +5,7 @@ all: $(target)
 test: all
 	node test.js
 
-$(target): build/ point.cpp
+$(target): build/ src/*
 	node-waf build
 
 build/:

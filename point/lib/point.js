@@ -7,7 +7,7 @@
 /// the ability to store internal fields
 
 // the bindings are never exposed directly
-var CppPoint = require('./build/Release/point').Point;
+var CppPoint = require('../build/Release/point').Point;
 
 // creates a point from the bindings
 var Point = function(x, y) {

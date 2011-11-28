@@ -11,6 +11,6 @@ def configure(conf):
 def build(bld):
     obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
     obj.target = 'point'
-    obj.source = 'point.cpp'
+    obj.source = 'src/point.cpp'
 
 # vim: ft=python

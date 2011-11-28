@@ -1,7 +1,14 @@
 var assert = require('assert');
 
-var NativePoint = require('./point_native');
-var CppPoint = require('./build/Release/point').Point;
+// here we require the current folder
+// this will load the index.js and give us access to our different
+// Point classes
+var point_types = require('./');
+
+// we could have required our files directly here (./lib/point_native... etc)
+// this way allows us to avoid having to know where the files come from
+var NativePoint = point_types.Native;
+var CppPoint = point_types.Cpp;
 
 function run_tests(FunctionTemplate) {
     var p = new FunctionTemplate(3, 1);
@@ -26,11 +33,11 @@ run_tests(NativePoint);
 // prototype in javascript and then finalize what you need in cpp
 run_tests(CppPoint);
 
-////// see the native point.js file for details ///////
+////// see the lib/point.js file for details ///////
 
 // test the merged point that has been extended
 // with the native 'length' method
-var Point = require('./point');
+var Point = point_types.Point
 
 var p = new Point(1, 1);
 
