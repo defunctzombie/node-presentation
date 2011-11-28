@@ -26,3 +26,27 @@ run_tests(NativePoint);
 // prototype in javascript and then finalize what you need in cpp
 run_tests(CppPoint);
 
+////// see the native point.js file for details ///////
+
+// test the merged point that has been extended
+// with the native 'length' method
+var Point = require('./point');
+
+var p = new Point(1, 1);
+
+// since we return from the Point function
+// we can also just do (prefered by some people)
+//var p = Point(1, 1);
+
+// test that 'p' is an instance of all the expected types
+assert.ok(p instanceof CppPoint);
+assert.ok(p instanceof Point);
+// not the same as our native p
+assert.ok(! (p instanceof NativePoint));
+
+// basic test of the length method
+assert.equal(1.4142, Math.floor(p.length() * 10000)/10000);
+
+// run the same tests on the merged binding as the others
+run_tests(Point);
+
