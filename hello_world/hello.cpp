@@ -44,6 +44,7 @@ void init(v8::Handle<v8::Object> target)
 }
 
 // makes the module available for loading
-// 'hello' is the module name and it MUST match the filename
+// 'hello' is the module name and it MUST match the shared object filename
+// in this case we will build 'hello.node' (see wscript)
 // init is the method that will be called to load the module
 NODE_MODULE(hello, init)

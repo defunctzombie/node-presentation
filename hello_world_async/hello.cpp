@@ -166,7 +166,4 @@ void init(v8::Handle<v8::Object> target)
     NODE_SET_METHOD(target, "printSync", PrintSync);
 }
 
-// makes the module available for loading
-// 'hello' is the module name and it MUST match the filename
-// init is the method that will be called to load the module
 NODE_MODULE(hello, init)
