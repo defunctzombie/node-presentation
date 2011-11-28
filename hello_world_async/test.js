@@ -1,4 +1,3 @@
-
 // load the native module
 var native = require('./hello_native');
 
@@ -9,29 +8,57 @@ var bindings = require('./build/Release/hello');
 // alternate way to expose bindings to end user
 var wrapper = require('./hello_bindings');
 
-// even tho this is called first, the execution of the print
-// is deferred to the 'nextTick'
-native.print('Sometimes the ', function() {
-    native.printSync('order\n');
-});
+var trace = [];
 
-// this will print right away
-native.printSync('doesn\'t matter. ');
+function run_native() {
+    // even tho this is called first, the execution of the print
+    // is deferred to the 'nextTick'
+    native.print('Sometimes the ', function() {
+        trace.push('async');
 
-// invoke the c++ bindings after printing from native
-// otherwise we get 'doesn't matter twice first
-// we can easily put this in the callback of the native 'print' call
-// using timeout here to just show the example
-require('timers').setTimeout(function() {
+        native.printSync('order\n');
+
+        // run the same thing for our c++ bindings
+        run_bindings();
+    });
+
+    trace.push('sync');
+
+    // this will print right away
+    native.printSync('doesn\'t matter. ');
+}
+
+function run_bindings() {
     bindings.print('Sometimes the ', function() {
-        bindings.printSync('order\n');
-    });
-    bindings.printSync('doesn\'t matter. ');
-}, 30);
+        trace.push('async');
 
-require('timers').setTimeout(function() {
-    wrapper.print('Sometimes the ', function() {
-        wrapper.print('order\n');
+        bindings.printSync('order\n');
+
+        // run the same thing for the wrapper
+        run_wrapper();
     });
+
+    trace.push('sync');
+    bindings.printSync('doesn\'t matter. ');
+}
+
+function run_wrapper() {
+    wrapper.print('Sometimes the ', function() {
+        trace.push('async');
+        wrapper.print('order\n');
+
+        // sanity check for execution order
+        require('assert').deepEqual(['sync', 'async', 'sync', 'async', 'sync', 'async'], trace);
+    });
+
+    trace.push('sync');
     wrapper.print('doesn\'t matter. ');
-}, 60);
+}
+
+// start the print chain
+run_native();
+
+// output should be
+//doesn't matter. Sometimes the order
+//doesn't matter. Sometimes the order
+//doesn't matter. Sometimes the order
