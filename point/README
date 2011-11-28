@@ -3,7 +3,8 @@ simple 2d Point class in native js and c++
  - index.js is the entry point for our point module
  - lib/point_native.js is the native implementation in javascript
  - lib/point.js shows c++ bindings extended with native methods
- - src/point.cpp is the clone in c++
+ - src/mainc.cpp is the module entry point
+ - src/point.hpp/cpp is the clone in c++
  - test.js test script
 
 Compilation:
