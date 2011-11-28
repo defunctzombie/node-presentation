@@ -2,7 +2,6 @@
 #include <cassert>
 
 #include <node.h>
-#include <v8.h>
 
 // the baton is how work is passed between the various stages of the
 // thread pool cycle
@@ -15,7 +14,7 @@ struct Baton
 /// this is the method that will do the actual 'work'
 /// in our case this is just to print to stdout
 /// you will not want to do something so trivial usually :)
-void EIO_Print(eio_req* req)
+void Print(uv_work_t* req)
 {
     // the baton pointer can be found in the 'data' member of req
     // it is important to know what the type was when you cast it
@@ -27,19 +26,21 @@ void EIO_Print(eio_req* req)
 
     // if your work has any output that needs to be returned to the user
     // you will need to use the same baton object
-    // look at EIO_AfterPrint for the final stage
+    // look at AfterPrint for the final stage
 }
 
-int EIO_AfterPrint(eio_req* req)
+void AfterPrint(uv_work_t* req)
 {
-    // very important to deref the event loop
-    // in the event of something going wrong here we don't want to
-    // hang a possible exit
-    ev_unref(EV_DEFAULT_UC);
-
     // again we need to get our baton object
     Baton* baton = static_cast<Baton*>(req->data);
     assert(baton);
+
+    // hopefully in the future the user will not need to delete
+    // the req pointer directly, for now you are responsible for its lifetime
+    // you could put a copy of it into the baton for easier mem management
+    // but this is strange design imho so I have omitted it here to be clear
+    // about what has to happen
+    delete req;
 
     // manage lifetime of any locals we create here
     // in our case there are none
@@ -66,8 +67,6 @@ int EIO_AfterPrint(eio_req* req)
     // cleanup our baton object
     // you could put the dispose call in the destructor
     delete baton;
-
-    return 0;
 }
 
 /// async print method
@@ -106,19 +105,24 @@ v8::Handle<v8::Value> Print(const v8::Arguments& args) {
     // there will be nothing to call when you return from the thread
     baton->callback = v8::Persistent<v8::Function>::New(args[1].As<v8::Function>());
 
-    // queue our work for the thread pool
-    // 1st argument EIO_Print is the function to call to do the actual work
-    // 3rd argument EIO_AFterPrint is the function to call after work is done
-    // last argument is a pointer to the baton
-    eio_custom(EIO_Print, EIO_PRI_DEFAULT, EIO_AfterPrint, baton);
+    // the uv request, manages request details and hold our baton
+    // for now we have to manage the lifetime ourselves, this may
+    // change in the future
+    uv_work_t* req = new uv_work_t();
 
-    // add a ref count to the event loop
-    // the event loop will not exit as long as the ref count > 0
-    // this is important because if libev things there are no more events then the
-    // loop (and program will exit). Since your 'print' invocation returns immedately
-    // you need to make sure the event loop waits around for you to finish the work
-    // see the EIO_AfterPrint method for the matching unref call
-    ev_ref(EV_DEFAULT_UC);
+    // the data pointer can be anything we want, convention is to use
+    // a 'baton' like object for input/output
+    req->data = baton;
+
+    // ask uv to queue our work into the thread pool
+    // there are 3 arguments we care about here
+    //   req is the actual req object, for now we have to manage the memory
+    //       allocation and deallocation ourselves
+    //   Print will do the actual work in the separate thread.
+    //       you should not call v8 methods from this thread!
+    //   AfterPrint is called once we are back in the main loop
+    //       you can call v8 methods and should call the callback
+    uv_queue_work(uv_default_loop(), req, Print, AfterPrint);
 
     return scope.Close(v8::Undefined());
 }
