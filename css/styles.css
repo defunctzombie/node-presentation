@@ -539,6 +539,16 @@ article.smaller ul {
   line-height: 24px;
   letter-spacing: 0;
 }
+article.smaller dl {
+  font-size: 24px;
+  line-height: 26px;
+  letter-spacing: 0;
+}
+
+dd {
+    padding-bottom: 6px;
+}
+
 article.smaller table {
   font-size: 20px;
   line-height: 24px;
